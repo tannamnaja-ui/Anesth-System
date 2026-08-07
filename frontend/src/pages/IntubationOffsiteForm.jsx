@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
-import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect } from '../components/FormFields.jsx';
+import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect, DoctorSelect } from '../components/FormFields.jsx';
 
 // Option lists transcribed verbatim from the source Google Form
 // (แบบบันทึกการใส่ท่อช่วยหายใจนอกสถานที่ โรงพยาบาลหาดใหญ่).
@@ -76,6 +76,7 @@ export default function IntubationOffsiteForm({ patient }) {
   const [hn, setHn] = useState(patient.hn || '');
   const [recordId, setRecordId] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -89,12 +90,14 @@ export default function IntubationOffsiteForm({ patient }) {
     async function load() {
       setLoading(true);
       try {
-        const [officersRes, formRes] = await Promise.all([
+        const [officersRes, doctorsRes, formRes] = await Promise.all([
           api.getOfficers(),
+          api.getDoctors(),
           api.getIntubationOffsite(patient.an),
         ]);
         if (cancelled) return;
         setOfficers(officersRes.data);
+        setDoctors(doctorsRes.data);
         if (formRes.data) {
           setRecordId(formRes.data.id);
           setForm(recordToFormState(formRes.data));
@@ -199,7 +202,7 @@ export default function IntubationOffsiteForm({ patient }) {
           <TextInput label="เวลาที่ใช้ในการ intubation โดยรวม (นาที)" value={form.total_intubation_time} onChange={(v) => set('total_intubation_time', v)} />
         </div>
         <div className="af-grid">
-          <OfficerSelect label="Anesthesia doctor" value={form.anesthesia_doctor} onChange={(v) => set('anesthesia_doctor', v)} officers={officers} />
+          <DoctorSelect label="Anesthesia doctor" value={form.anesthesia_doctor} onChange={(v) => set('anesthesia_doctor', v)} doctors={doctors} />
           <OfficerSelect label="Anesthesia nurse 1" value={form.anesthesia_nurse_1} onChange={(v) => set('anesthesia_nurse_1', v)} officers={officers} />
           <OfficerSelect label="Anesthesia nurse 2" value={form.anesthesia_nurse_2} onChange={(v) => set('anesthesia_nurse_2', v)} officers={officers} />
         </div>

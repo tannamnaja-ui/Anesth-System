@@ -1,9 +1,15 @@
 node_modules/
 dist/
 backend/config/connection.json
+backend/config/session-secret.txt
 *.log
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 .env
+
+# Installer build artifacts (large binaries, rebuild via installer/AnesthSetup.iss)
+installer/payload/
+installer/output/
+/*.exe

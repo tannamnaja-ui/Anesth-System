@@ -36,6 +36,7 @@ export const api = {
     return request(`/patients/search?${query.toString()}`);
   },
   getOfficers: () => request('/officers'),
+  getDoctors: () => request('/doctors'),
   getAnesForm: (an) => request(`/anes-form/new-anesth/${encodeURIComponent(an)}`),
   saveAnesForm: (payload) =>
     request('/anes-form/new-anesth', { method: 'POST', body: JSON.stringify(payload) }),
@@ -50,4 +51,7 @@ export const api = {
     request('/postpone-cancel/record', { method: 'POST', body: JSON.stringify(payload) }),
   getHospitalName: () => request('/hospital/name'),
   getDepartments: () => request('/departments'),
+  getPreopAssessment: (an) => request(`/preop-assessment/record/${encodeURIComponent(an)}`),
+  savePreopAssessment: (payload) =>
+    request('/preop-assessment/record', { method: 'POST', body: JSON.stringify(payload) }),
 };

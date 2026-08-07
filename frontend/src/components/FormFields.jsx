@@ -69,3 +69,21 @@ export function OfficerSelect({ label, value, onChange, officers }) {
     </Field>
   );
 }
+
+// Same idea as OfficerSelect but sourced from the doctor table (filtered to
+// active='Y' server-side), for fields that specifically mean "pick a doctor"
+// rather than any officer/nurse.
+export function DoctorSelect({ label, value, onChange, doctors }) {
+  return (
+    <Field label={label}>
+      <select value={value} onChange={(e) => onChange(e.target.value)}>
+        <option value="">-- เลือก --</option>
+        {doctors.map((d) => (
+          <option key={d.code} value={d.name}>
+            {d.name}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+}

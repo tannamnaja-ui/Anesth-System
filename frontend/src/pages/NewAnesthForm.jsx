@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
-import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect } from '../components/FormFields.jsx';
+import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect, DoctorSelect } from '../components/FormFields.jsx';
 
 // Option lists transcribed verbatim from the source Google Form
 // (แบบฟอร์ม Anesthesia record และ PACU กลุ่มงานวิสัญญีวิทยา โรงพยาบาลหาดใหญ่).
@@ -146,6 +146,7 @@ export default function NewAnesthForm({ patient }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [recordId, setRecordId] = useState(null);
   const [officers, setOfficers] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -159,12 +160,14 @@ export default function NewAnesthForm({ patient }) {
     async function load() {
       setLoading(true);
       try {
-        const [officersRes, formRes] = await Promise.all([
+        const [officersRes, doctorsRes, formRes] = await Promise.all([
           api.getOfficers(),
+          api.getDoctors(),
           api.getAnesForm(patient.an),
         ]);
         if (cancelled) return;
         setOfficers(officersRes.data);
+        setDoctors(doctorsRes.data);
         if (formRes.data) {
           setRecordId(formRes.data.id);
           setForm(recordToFormState(formRes.data));
@@ -319,9 +322,9 @@ export default function NewAnesthForm({ patient }) {
       <section className="af-section">
         <h3>ทีมผู้ปฏิบัติงาน</h3>
         <div className="af-grid">
-          <OfficerSelect label="Staff 1" value={form.staff_1} onChange={(v) => set('staff_1', v)} officers={officers} />
-          <OfficerSelect label="Staff 2" value={form.staff_2} onChange={(v) => set('staff_2', v)} officers={officers} />
-          <OfficerSelect label="Staff 3" value={form.staff_3} onChange={(v) => set('staff_3', v)} officers={officers} />
+          <DoctorSelect label="Staff 1" value={form.staff_1} onChange={(v) => set('staff_1', v)} doctors={doctors} />
+          <DoctorSelect label="Staff 2" value={form.staff_2} onChange={(v) => set('staff_2', v)} doctors={doctors} />
+          <DoctorSelect label="Staff 3" value={form.staff_3} onChange={(v) => set('staff_3', v)} doctors={doctors} />
           <OfficerSelect label="Nurse Anesth. 1/1" value={form.nurse_anesth_1_1} onChange={(v) => set('nurse_anesth_1_1', v)} officers={officers} />
           <OfficerSelect label="Nurse Anesth. 1/2" value={form.nurse_anesth_1_2} onChange={(v) => set('nurse_anesth_1_2', v)} officers={officers} />
           <OfficerSelect label="Nurse Anesth. 2/1" value={form.nurse_anesth_2_1} onChange={(v) => set('nurse_anesth_2_1', v)} officers={officers} />
