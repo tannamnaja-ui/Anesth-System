@@ -16,6 +16,7 @@ const postponeCancelRoutes = require('./routes/postponeCancel');
 const hospitalRoutes = require('./routes/hospital');
 const departmentRoutes = require('./routes/departments');
 const preopAssessmentRoutes = require('./routes/preopAssessment');
+const difficultIntubationOrRoutes = require('./routes/difficultIntubationOr');
 const { getSessionSecret } = require('./utils/connectionStore');
 
 const app = express();
@@ -51,6 +52,7 @@ app.use('/api/postpone-cancel', postponeCancelRoutes);
 app.use('/api/hospital', hospitalRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/preop-assessment', preopAssessmentRoutes);
+app.use('/api/difficult-intubation-or', difficultIntubationOrRoutes);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 

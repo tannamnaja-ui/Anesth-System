@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect, DoctorSelect } from '../components/FormFields.jsx';
+import { NO_CASE_KEY_MESSAGE } from '../utils/messages.js';
 
 // Option lists transcribed verbatim from the source Google Form
 // (แบบฟอร์ม Anesthesia record และ PACU กลุ่มงานวิสัญญีวิทยา โรงพยาบาลหาดใหญ่).
@@ -151,6 +152,8 @@ export default function NewAnesthForm({ patient }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const caseKey = patient.an || patient.vn;
+
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -160,14 +163,18 @@ export default function NewAnesthForm({ patient }) {
     async function load() {
       setLoading(true);
       try {
-        const [officersRes, doctorsRes, formRes] = await Promise.all([
-          api.getOfficers(),
-          api.getDoctors(),
-          api.getAnesForm(patient.an),
-        ]);
+        const [officersRes, doctorsRes] = await Promise.all([api.getOfficers(), api.getDoctors()]);
         if (cancelled) return;
         setOfficers(officersRes.data);
         setDoctors(doctorsRes.data);
+        if (!caseKey) {
+          setRecordId(null);
+          setForm({ ...EMPTY_FORM });
+          setStatus({ type: 'error', message: NO_CASE_KEY_MESSAGE });
+          return;
+        }
+        const formRes = await api.getAnesForm(caseKey);
+        if (cancelled) return;
         if (formRes.data) {
           setRecordId(formRes.data.id);
           setForm(recordToFormState(formRes.data));
@@ -185,7 +192,7 @@ export default function NewAnesthForm({ patient }) {
     return () => {
       cancelled = true;
     };
-  }, [patient.an]);
+  }, [caseKey]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -197,6 +204,7 @@ export default function NewAnesthForm({ patient }) {
         id: recordId,
         an: patient.an,
         hn: patient.hn,
+        vn: patient.vn,
         operation_set_id: patient.operation_set_id,
       };
       const res = await api.saveAnesForm(payload);

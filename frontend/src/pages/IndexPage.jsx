@@ -14,6 +14,7 @@ const COLUMNS = [
   'patient_name',
   'operation_name',
   'an',
+  'vn',
   'doctor_name',
   'operation_set_type_name',
   'operation_time_type_name',

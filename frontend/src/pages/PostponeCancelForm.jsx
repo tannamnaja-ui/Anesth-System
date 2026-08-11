@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { Field, TextInput, CheckboxGroup } from '../components/FormFields.jsx';
+import { NO_CASE_KEY_MESSAGE } from '../utils/messages.js';
 
 // Option lists transcribed verbatim from the source Google Form
 // (แบบบันทึกการเลื่อน/งดผ่าตัด เริ่ม ก.ค 2568).
@@ -58,6 +59,8 @@ export default function PostponeCancelForm({ patient }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const caseKey = patient.an || patient.vn;
+
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -67,7 +70,13 @@ export default function PostponeCancelForm({ patient }) {
     async function load() {
       setLoading(true);
       try {
-        const formRes = await api.getPostponeCancel(patient.an);
+        if (!caseKey) {
+          setRecordId(null);
+          setForm({ ...EMPTY_FORM });
+          setStatus({ type: 'error', message: NO_CASE_KEY_MESSAGE });
+          return;
+        }
+        const formRes = await api.getPostponeCancel(caseKey);
         if (cancelled) return;
         if (formRes.data) {
           setRecordId(formRes.data.id);
@@ -88,7 +97,7 @@ export default function PostponeCancelForm({ patient }) {
     return () => {
       cancelled = true;
     };
-  }, [patient.an]);
+  }, [caseKey]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -100,6 +109,7 @@ export default function PostponeCancelForm({ patient }) {
         id: recordId,
         an: patient.an,
         hn,
+        vn: patient.vn,
         operation_set_id: patient.operation_set_id,
       };
       const res = await api.savePostponeCancel(payload);

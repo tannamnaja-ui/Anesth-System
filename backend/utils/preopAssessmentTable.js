@@ -123,7 +123,7 @@ const TEXT_COLUMNS = [
   'visit_anesthesia_nurse',
 ];
 
-const ALL_COLUMNS = ['an', 'hn', 'operation_set_id', ...TEXT_COLUMNS, 'created_by'];
+const ALL_COLUMNS = ['an', 'hn', 'vn', 'operation_set_id', ...TEXT_COLUMNS, 'created_by'];
 
 let ensured = false;
 
@@ -163,6 +163,7 @@ async function ensurePreopAssessmentTable(dbType, conn) {
   }
 
   await ensureColumnExists(dbType, conn, TABLE_NAME, 'operation_set_id', dbType === 'mysql' ? 'VARCHAR(50)' : 'varchar(50)');
+  await ensureColumnExists(dbType, conn, TABLE_NAME, 'vn', dbType === 'mysql' ? 'VARCHAR(50)' : 'varchar(50)');
 
   ensured = true;
 }

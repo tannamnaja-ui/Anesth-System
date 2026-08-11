@@ -70,9 +70,11 @@ const TEXT_COLUMNS = [
   'recorder',
 ];
 
-// an/hn/operation_set_id link back to the operation_set record (read-only
-// reference — no foreign key, since we never modify the existing schema).
-const ALL_COLUMNS = ['an', 'hn', 'operation_set_id', ...TEXT_COLUMNS, 'created_by'];
+// an/hn/vn/operation_set_id link back to the operation_set record
+// (read-only reference — no foreign key, since we never modify the
+// existing schema). Not every case has an AN yet (e.g. still "รอการเปิด
+// Visit"), so VN is kept as a fallback identifier.
+const ALL_COLUMNS = ['an', 'hn', 'vn', 'operation_set_id', ...TEXT_COLUMNS, 'created_by'];
 
 let ensured = false;
 
@@ -110,6 +112,7 @@ async function ensureAnesFormTable(dbType, conn) {
   }
 
   await ensureColumnExists(dbType, conn, TABLE_NAME, 'operation_set_id', dbType === 'mysql' ? 'VARCHAR(50)' : 'varchar(50)');
+  await ensureColumnExists(dbType, conn, TABLE_NAME, 'vn', dbType === 'mysql' ? 'VARCHAR(50)' : 'varchar(50)');
 
   ensured = true;
 }

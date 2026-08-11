@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect } from '../components/FormFields.jsx';
+import { NO_CASE_KEY_MESSAGE } from '../utils/messages.js';
 
 const TYPE_PATIENT_OPTIONS = ['IPD', 'OPD', 'OPD/ Admit', 'ODS'];
 const POSTOP_VISIT_OPTIONS = ['1', '2', '3', '4', 'ODS by Phone', 'PO visit'];
@@ -49,6 +50,8 @@ export default function PostopVisitForm({ patient }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const caseKey = patient.an || patient.vn;
+
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -58,12 +61,17 @@ export default function PostopVisitForm({ patient }) {
     async function load() {
       setLoading(true);
       try {
-        const [officersRes, formRes] = await Promise.all([
-          api.getOfficers(),
-          api.getPostopVisit(patient.an),
-        ]);
+        const officersRes = await api.getOfficers();
         if (cancelled) return;
         setOfficers(officersRes.data);
+        if (!caseKey) {
+          setRecordId(null);
+          setForm({ ...EMPTY_FORM });
+          setStatus({ type: 'error', message: NO_CASE_KEY_MESSAGE });
+          return;
+        }
+        const formRes = await api.getPostopVisit(caseKey);
+        if (cancelled) return;
         if (formRes.data) {
           setRecordId(formRes.data.id);
           setForm(recordToFormState(formRes.data));
@@ -81,7 +89,7 @@ export default function PostopVisitForm({ patient }) {
     return () => {
       cancelled = true;
     };
-  }, [patient.an]);
+  }, [caseKey]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -93,6 +101,7 @@ export default function PostopVisitForm({ patient }) {
         id: recordId,
         an: patient.an,
         hn: patient.hn,
+        vn: patient.vn,
         operation_set_id: patient.operation_set_id,
       };
       const res = await api.savePostopVisit(payload);

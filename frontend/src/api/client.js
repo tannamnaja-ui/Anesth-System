@@ -54,4 +54,7 @@ export const api = {
   getPreopAssessment: (an) => request(`/preop-assessment/record/${encodeURIComponent(an)}`),
   savePreopAssessment: (payload) =>
     request('/preop-assessment/record', { method: 'POST', body: JSON.stringify(payload) }),
+  getDifficultIntubationOr: (an) => request(`/difficult-intubation-or/record/${encodeURIComponent(an)}`),
+  saveDifficultIntubationOr: (payload) =>
+    request('/difficult-intubation-or/record', { method: 'POST', body: JSON.stringify(payload) }),
 };

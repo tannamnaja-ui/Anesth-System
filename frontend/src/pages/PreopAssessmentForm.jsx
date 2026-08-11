@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { Field, TextInput, RadioGroup, CheckboxGroup, OfficerSelect, DoctorSelect } from '../components/FormFields.jsx';
+import { NO_CASE_KEY_MESSAGE } from '../utils/messages.js';
 
 // Option lists transcribed from the "assessment preop anesth HosXp" sheet
 // (แบบประเมินผู้ป่วยก่อนระงับความรู้สึก / Pre-anesthetic evaluation).
@@ -167,6 +168,8 @@ export default function PreopAssessmentForm({ patient }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const caseKey = patient.an || patient.vn;
+
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
@@ -176,14 +179,18 @@ export default function PreopAssessmentForm({ patient }) {
     async function load() {
       setLoading(true);
       try {
-        const [officersRes, doctorsRes, formRes] = await Promise.all([
-          api.getOfficers(),
-          api.getDoctors(),
-          api.getPreopAssessment(patient.an),
-        ]);
+        const [officersRes, doctorsRes] = await Promise.all([api.getOfficers(), api.getDoctors()]);
         if (cancelled) return;
         setOfficers(officersRes.data);
         setDoctors(doctorsRes.data);
+        if (!caseKey) {
+          setRecordId(null);
+          setForm({ ...EMPTY_FORM });
+          setStatus({ type: 'error', message: NO_CASE_KEY_MESSAGE });
+          return;
+        }
+        const formRes = await api.getPreopAssessment(caseKey);
+        if (cancelled) return;
         if (formRes.data) {
           setRecordId(formRes.data.id);
           setForm(recordToFormState(formRes.data));
@@ -203,7 +210,7 @@ export default function PreopAssessmentForm({ patient }) {
     return () => {
       cancelled = true;
     };
-  }, [patient.an]);
+  }, [caseKey]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -215,6 +222,7 @@ export default function PreopAssessmentForm({ patient }) {
         id: recordId,
         an: patient.an,
         hn,
+        vn: patient.vn,
         operation_set_id: patient.operation_set_id,
       };
       const res = await api.savePreopAssessment(payload);

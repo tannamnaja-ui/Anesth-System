@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import DifficultIntubationOrForm from './DifficultIntubationOrForm.jsx';
 import PreopAssessmentForm from './PreopAssessmentForm.jsx';
 import NewAnesthForm from './NewAnesthForm.jsx';
 import PostopVisitForm from './PostopVisitForm.jsx';
@@ -7,10 +8,12 @@ import IntubationOffsiteForm from './IntubationOffsiteForm.jsx';
 import PostponeCancelForm from './PostponeCancelForm.jsx';
 import AppHeader from '../components/AppHeader.jsx';
 
-// New Anesth new form / Postop visit are hidden for now (not in use yet) —
-// kept in TABS with hidden:true so re-enabling later is a one-line flip.
+// New Anesth new form / Postop visit / Preop Anesth are hidden for now (not
+// in use yet) — kept in TABS with hidden:true so re-enabling later is a
+// one-line flip.
 const TABS = [
-  { key: 'preop-anesth', label: 'Preop Anesth' },
+  { key: 'difficult-intubation-or', label: 'ใส่ท่อช่วยหายใจยากในห้องผ่าตัด' },
+  { key: 'preop-anesth', label: 'Preop Anesth', hidden: true },
   { key: 'new-anesth', label: 'New Anesth new form', hidden: true },
   { key: 'postop-visit', label: 'Postop. visit รายเคส', hidden: true },
   { key: 'intubation-offsite', label: 'ใส่ท่อช่วยหายใจนอกสถานที่' },
@@ -71,6 +74,7 @@ export default function PatientDetail() {
         </nav>
 
         <div className="tab-content">
+          {activeTab === 'difficult-intubation-or' && <DifficultIntubationOrForm patient={patient} />}
           {activeTab === 'preop-anesth' && <PreopAssessmentForm patient={patient} />}
           {activeTab === 'new-anesth' && <NewAnesthForm patient={patient} />}
           {activeTab === 'postop-visit' && <PostopVisitForm patient={patient} />}

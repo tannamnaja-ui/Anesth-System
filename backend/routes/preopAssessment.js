@@ -29,7 +29,7 @@ function getDbConfigOrFail(res) {
 }
 
 // Latest saved record for this AN, if any.
-router.get('/record/:an', async (req, res) => {
+router.get('/record/:key', async (req, res) => {
   const target = getDbConfigOrFail(res);
   if (!target) return;
   const { dbType, dbConfig } = target;
@@ -39,9 +39,9 @@ router.get('/record/:an', async (req, res) => {
       await ensurePreopAssessmentTable(dbType, conn);
       const rows = await conn.query(
         dbType === 'mysql'
-          ? `SELECT * FROM ${TABLE_NAME} WHERE an = ? ORDER BY id DESC LIMIT 1`
-          : `SELECT * FROM ${TABLE_NAME} WHERE an = $1 ORDER BY id DESC LIMIT 1`,
-        [req.params.an]
+          ? `SELECT * FROM ${TABLE_NAME} WHERE an = ? OR vn = ? ORDER BY id DESC LIMIT 1`
+          : `SELECT * FROM ${TABLE_NAME} WHERE an = $1 OR vn = $2 ORDER BY id DESC LIMIT 1`,
+        [req.params.key, req.params.key]
       );
       return rows[0] || null;
     });
@@ -57,14 +57,14 @@ router.post('/record', async (req, res) => {
   if (!target) return;
   const { dbType, dbConfig } = target;
 
-  const { id, an, hn, ...rest } = req.body;
-  if (!an) {
-    return res.status(400).json({ success: false, message: 'ไม่พบเลข AN ของผู้ป่วย' });
+  const { id, an, hn, vn, ...rest } = req.body;
+  if (!an && !vn) {
+    return res.status(400).json({ success: false, message: 'ไม่พบเลข AN หรือ VN ของผู้ป่วย' });
   }
 
-  const values = { an, hn: hn || null };
+  const values = { an: an || null, hn: hn || null, vn: vn || null };
   for (const col of ALL_COLUMNS) {
-    if (col === 'an' || col === 'hn' || col === 'created_by') continue;
+    if (col === 'an' || col === 'hn' || col === 'vn' || col === 'created_by') continue;
     values[col] = rest[col] ?? null;
   }
   values.created_by = req.session.officer.loginName;

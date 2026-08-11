@@ -1,37 +1,34 @@
-// New table for the "ใส่ท่อช่วยหายใจนอกสถานที่" tab — a table WE own,
-// alongside app_anes_new_form / app_anes_postop_visit. Never touches
-// existing hospital tables.
+// New table for the "ใส่ท่อช่วยหายใจยากในห้องผ่าตัด" tab — a table WE own,
+// alongside the other app_anes_* tables. Never touches existing hospital
+// tables. Modeled on the Google Form
+// "แบบบันทึกการใส่ท่อช่วยหายใจยากในห้องผ่าตัด โรงพยาบาลหาดใหญ่".
 const { ensureColumnExists } = require('./schemaHelpers');
 
-const TABLE_NAME = 'app_anes_intubation_offsite';
+const TABLE_NAME = 'app_anes_difficult_intubation_or';
 
 const TEXT_COLUMNS = [
   'record_date',
-  'time_shift',
-  'diagnosis',
+  'ward',
+  'service',
   'sex',
   'age',
   'bmi',
-  'ward',
-  'reason_for_team',
-  'reason_for_team_other',
-  'attempts_before_team',
-  'patient_condition',
-  'ward_monitor',
-  'difficult_cause',
-  'difficult_cause_other',
-  'bag_mask_ventilation',
-  'difficult_management',
-  'difficult_management_other',
-  'difficult',
-  'drug_used',
-  'drug_name',
-  'success_attempts_by_team',
-  'min_spo2',
-  'total_intubation_time',
-  'anesthesia_doctor',
-  'anesthesia_nurse_1',
-  'anesthesia_nurse_2',
+  'operation',
+  'type_case',
+  'mallampati_class',
+  'tmd',
+  'teeth',
+  'radiation_burn_neck',
+  'short_neck',
+  'neck_motion_limit',
+  'laryngoscopic_view',
+  'method_mccoy_blade',
+  'method_video_laryngoscope',
+  'method_fiberoptic',
+  'success_by',
+  'success_by_other',
+  'success_by_person',
+  'desaturation',
   'note',
   'recorder',
 ];
@@ -40,7 +37,7 @@ const ALL_COLUMNS = ['an', 'hn', 'vn', 'operation_set_id', ...TEXT_COLUMNS, 'cre
 
 let ensured = false;
 
-async function ensureIntubationOffsiteTable(dbType, conn) {
+async function ensureDifficultIntubationOrTable(dbType, conn) {
   if (ensured) return;
 
   if (dbType === 'mysql') {
@@ -54,7 +51,7 @@ async function ensureIntubationOffsiteTable(dbType, conn) {
         created_by TEXT,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX app_anes_intubation_offsite_an_idx (an)
+        INDEX app_anes_difficult_intubation_or_an_idx (an)
       )
     `);
   } else {
@@ -71,7 +68,7 @@ async function ensureIntubationOffsiteTable(dbType, conn) {
       )
     `);
     await conn.query(
-      `CREATE INDEX IF NOT EXISTS app_anes_intubation_offsite_an_idx ON ${TABLE_NAME} (an)`
+      `CREATE INDEX IF NOT EXISTS app_anes_difficult_intubation_or_an_idx ON ${TABLE_NAME} (an)`
     );
   }
 
@@ -81,4 +78,4 @@ async function ensureIntubationOffsiteTable(dbType, conn) {
   ensured = true;
 }
 
-module.exports = { TABLE_NAME, ALL_COLUMNS, ensureIntubationOffsiteTable };
+module.exports = { TABLE_NAME, ALL_COLUMNS, ensureDifficultIntubationOrTable };

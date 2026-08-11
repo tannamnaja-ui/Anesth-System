@@ -4,8 +4,8 @@ const { withConnection } = require('../utils/dbClient');
 const {
   TABLE_NAME,
   ALL_COLUMNS,
-  ensureIntubationOffsiteTable,
-} = require('../utils/intubationOffsiteTable');
+  ensureDifficultIntubationOrTable,
+} = require('../utils/difficultIntubationOrTable');
 
 const router = express.Router();
 
@@ -36,7 +36,7 @@ router.get('/record/:key', async (req, res) => {
 
   try {
     const row = await withConnection(dbType, dbConfig, async (conn) => {
-      await ensureIntubationOffsiteTable(dbType, conn);
+      await ensureDifficultIntubationOrTable(dbType, conn);
       const rows = await conn.query(
         dbType === 'mysql'
           ? `SELECT * FROM ${TABLE_NAME} WHERE an = ? OR vn = ? ORDER BY id DESC LIMIT 1`
@@ -71,7 +71,7 @@ router.post('/record', async (req, res) => {
 
   try {
     const result = await withConnection(dbType, dbConfig, async (conn) => {
-      await ensureIntubationOffsiteTable(dbType, conn);
+      await ensureDifficultIntubationOrTable(dbType, conn);
 
       const columns = Object.keys(values);
       const placeholder = (i) => (dbType === 'mysql' ? '?' : `$${i + 1}`);
