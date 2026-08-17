@@ -57,4 +57,14 @@ export const api = {
   getDifficultIntubationOr: (an) => request(`/difficult-intubation-or/record/${encodeURIComponent(an)}`),
   saveDifficultIntubationOr: (payload) =>
     request('/difficult-intubation-or/record', { method: 'POST', body: JSON.stringify(payload) }),
+  getPreopAnesthHosxp: (key) => request(`/preop-hosxp/record/${encodeURIComponent(key)}`),
+  savePreopAnesthHosxp: (payload) =>
+    request('/preop-hosxp/record', { method: 'POST', body: JSON.stringify(payload) }),
+  getIntraop: (key) => request(`/intraop/record/${encodeURIComponent(key)}`),
+  saveIntraop: (payload) => request('/intraop/record', { method: 'POST', body: JSON.stringify(payload) }),
+  getPacu: (key) => request(`/pacu/record/${encodeURIComponent(key)}`),
+  savePacu: (payload) => request('/pacu/record', { method: 'POST', body: JSON.stringify(payload) }),
+  getPostopVisitNew: (key) => request(`/postop-visit-new/record/${encodeURIComponent(key)}`),
+  savePostopVisitNew: (payload) =>
+    request('/postop-visit-new/record', { method: 'POST', body: JSON.stringify(payload) }),
 };

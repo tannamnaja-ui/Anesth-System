@@ -6,8 +6,8 @@
   --green-primary-light: #e3f0e3;
   --green-border: #cfe3cf;
   --green-header: #4f7a5f;
-  --text-main: #2f3e33;
-  --text-muted: #6b7d6e;
+  --text-main: #121212;
+  --text-muted: #3a3a3a;
   --divider-gray: #d9d9d9;
 }
 
@@ -351,7 +351,7 @@ textarea:focus {
 }
 
 .empty-hint {
-  color: #9aa89b;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 

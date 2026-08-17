@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DifficultIntubationOrForm from './DifficultIntubationOrForm.jsx';
+import PreopAnesthHosxpForm from './PreopAnesthHosxpForm.jsx';
+import IntraopForm from './IntraopForm.jsx';
+import PacuForm from './PacuForm.jsx';
+import PostopVisitNewForm from './PostopVisitNewForm.jsx';
 import PreopAssessmentForm from './PreopAssessmentForm.jsx';
 import NewAnesthForm from './NewAnesthForm.jsx';
 import PostopVisitForm from './PostopVisitForm.jsx';
@@ -8,10 +12,11 @@ import IntubationOffsiteForm from './IntubationOffsiteForm.jsx';
 import PostponeCancelForm from './PostponeCancelForm.jsx';
 import AppHeader from '../components/AppHeader.jsx';
 
-// New Anesth new form / Postop visit / Preop Anesth are hidden for now (not
-// in use yet) — kept in TABS with hidden:true so re-enabling later is a
-// one-line flip.
 const TABS = [
+  { key: 'preop-anesth-hosxp', label: 'preop anesth HOSxP' },
+  { key: 'intraop', label: 'Intraop' },
+  { key: 'pacu', label: 'PACU' },
+  { key: 'postop-visit-new', label: 'Postop. visit' },
   { key: 'difficult-intubation-or', label: 'ใส่ท่อช่วยหายใจยากในห้องผ่าตัด' },
   { key: 'preop-anesth', label: 'Preop Anesth', hidden: true },
   { key: 'new-anesth', label: 'New Anesth new form', hidden: true },
@@ -74,6 +79,10 @@ export default function PatientDetail() {
         </nav>
 
         <div className="tab-content">
+          {activeTab === 'preop-anesth-hosxp' && <PreopAnesthHosxpForm patient={patient} />}
+          {activeTab === 'intraop' && <IntraopForm patient={patient} />}
+          {activeTab === 'pacu' && <PacuForm patient={patient} />}
+          {activeTab === 'postop-visit-new' && <PostopVisitNewForm patient={patient} />}
           {activeTab === 'difficult-intubation-or' && <DifficultIntubationOrForm patient={patient} />}
           {activeTab === 'preop-anesth' && <PreopAssessmentForm patient={patient} />}
           {activeTab === 'new-anesth' && <NewAnesthForm patient={patient} />}

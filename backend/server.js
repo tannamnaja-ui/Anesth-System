@@ -17,6 +17,10 @@ const hospitalRoutes = require('./routes/hospital');
 const departmentRoutes = require('./routes/departments');
 const preopAssessmentRoutes = require('./routes/preopAssessment');
 const difficultIntubationOrRoutes = require('./routes/difficultIntubationOr');
+const preopAnesthHosxpRoutes = require('./routes/preopAnesthHosxp');
+const intraopRoutes = require('./routes/intraop');
+const pacuRoutes = require('./routes/pacu');
+const postopVisitNewRoutes = require('./routes/postopVisitNew');
 const { getSessionSecret } = require('./utils/connectionStore');
 
 const app = express();
@@ -53,6 +57,10 @@ app.use('/api/hospital', hospitalRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/preop-assessment', preopAssessmentRoutes);
 app.use('/api/difficult-intubation-or', difficultIntubationOrRoutes);
+app.use('/api/preop-hosxp', preopAnesthHosxpRoutes);
+app.use('/api/intraop', intraopRoutes);
+app.use('/api/pacu', pacuRoutes);
+app.use('/api/postop-visit-new', postopVisitNewRoutes);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
